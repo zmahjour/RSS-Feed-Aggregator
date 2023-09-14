@@ -37,3 +37,11 @@ class Comment(models.Model):
         return f"{self.user} commented on {self.episode}"
 
 
+class Playlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    episodes = models.ManyToManyField(Episode)
+    title = models.CharField(max_length=50)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} created {self.title} playlist"
