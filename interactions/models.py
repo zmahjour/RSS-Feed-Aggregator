@@ -13,3 +13,11 @@ class Subscription(models.Model):
         return f"{self.user} subscribed {self.channel}"
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} added {self.episode} to favorites"
+
+
