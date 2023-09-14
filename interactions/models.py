@@ -21,3 +21,19 @@ class Favorite(models.Model):
         return f"{self.user} added {self.episode} to favorites"
 
 
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET("deleted account"))
+    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
+    reply = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
+    is_reply = models.BooleanField(default=False)
+    content = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"{self.user} commented on {self.episode}"
+
+
