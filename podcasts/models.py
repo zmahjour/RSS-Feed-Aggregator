@@ -21,6 +21,9 @@ class Channel(models.Model):
     rss_feed = models.TextField()
     categories = models.ManyToManyField(Category)
 
+    def __str__(self):
+        return self.title
+
 
 class Episode(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
