@@ -37,3 +37,6 @@ class Episode(models.Model):
     guid = models.TextField()
     image_url = models.TextField(null=True, blank=True)
     audio_url = models.TextField()
+
+    def __str__(self):
+        return self.title
