@@ -21,3 +21,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
+class Profile(models.Model):
+    class Gender(models.TextChoices):
+        MALE = "Male"
+        FEMALE = "Female"
+        OTHER = "Other"
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to="users", null=True, blank=True)
+    country = models.CharField(max_length=50, null=True, blank=True)
+    gender = models.CharField(
+        max_length=6, choices=Gender.choices, null=True, blank=True
+    )
+    birthday = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
