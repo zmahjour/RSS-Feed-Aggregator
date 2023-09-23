@@ -26,17 +26,18 @@ class Channel(models.Model):
 
 
 class Episode(models.Model):
+    guid = models.TextField(unique=True)
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     subtitle = models.TextField(null=True, blank=True)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     author = models.CharField(max_length=100, null=True, blank=True)
-    pubdate = models.DateTimeField()
-    duration = models.CharField(max_length=10)
-    episode_type = models.CharField(max_length=25)
-    guid = models.TextField()
-    image_url = models.TextField(null=True, blank=True)
-    audio_url = models.TextField()
+    pub_date = models.DateTimeField()
+    duration = models.CharField(max_length=10, null=True, blank=True)
+    explicit = models.BooleanField(default=False)
+    episode_type = models.CharField(max_length=25, null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
+    audio_url = models.URLField()
 
     def __str__(self):
         return self.title
