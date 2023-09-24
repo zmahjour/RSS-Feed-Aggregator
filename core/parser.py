@@ -85,3 +85,21 @@ def create_category_list(channel_data_attrs):
     return categories
 
 
+def create_channel_dict(channel_data, channel_data_attrs):
+    namespace = "{http://www.itunes.com/dtds/podcast-1.0.dtd}"
+
+    channel_dict = {
+        "title": channel_data.get("title"),
+        "subtitle": channel_data.get(f"{namespace}subtitle"),
+        "description": channel_data.get("description"),
+        "author": channel_data.get(f"{namespace}author"),
+        "pub_date": convert_str_to_datetime(channel_data.get("pubDate")),
+        "language": channel_data.get("language"),
+        "owner_name": channel_data.get(f"{namespace}name"),
+        "owner_email": channel_data.get(f"{namespace}email"),
+        "image_url": channel_data_attrs.get(f"{namespace}image").get("href"),
+    }
+
+    return channel_dict
+
+
