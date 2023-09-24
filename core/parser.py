@@ -112,3 +112,30 @@ def convert_explicit_to_boolean(explicit_value):
         return False
 
 
+def create_episodes_dict_list(items_data, items_data_attrs):
+    namespace = "{http://www.itunes.com/dtds/podcast-1.0.dtd}"
+
+    episodes_dict_list = []
+
+    for item_data, item_data_attrs in items_data, items_data_attrs:
+        episode_dict = {
+            "guid": item_data.get("guid"),
+            "title": item_data.get("title"),
+            "subtitle": item_data.get(f"{namespace}subtitle"),
+            "description": item_data.get("description"),
+            "author": item_data.get("author"),
+            "pub_date": convert_str_to_datetime(item_data.get("pubDate")),
+            "duration": item_data.get(f"{namespace}duration"),
+            "explicit": convert_explicit_to_boolean(
+                item_data.get(f"{namespace}explicit")
+            ),
+            "episode_type": item_data.get(f"{namespace}episode_type"),
+            "image_url": item_data_attrs.get(f"{namespace}image").get("href"),
+            "audio_url": item_data_attrs.get("enclosure").get("url"),
+        }
+
+        episodes_dict_list.append(episode_dict)
+
+    return episodes_dict_list
+
+
