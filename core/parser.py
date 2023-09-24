@@ -122,7 +122,7 @@ def create_episodes_dict_list(items_data, items_data_attrs):
 
     episodes_dict_list = []
 
-    for item_data, item_data_attrs in items_data, items_data_attrs:
+    for item_data, item_data_attrs in zip(items_data, items_data_attrs):
         episode_dict = {
             "guid": item_data.get("guid"),
             "title": item_data.get("title"),
