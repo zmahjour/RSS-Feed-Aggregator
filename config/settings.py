@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "podcasts.apps.PodcastsConfig",
     "interactions.apps.InteractionsConfig",
     "accounts.apps.AccountsConfig",
+    # framework
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
