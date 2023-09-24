@@ -139,3 +139,27 @@ def create_episodes_dict_list(items_data, items_data_attrs):
     return episodes_dict_list
 
 
+def create_update_channel_episodes(rss_url):
+    rss_text = get_rss_text(rss_url=rss_url)
+    channel_data, channel_data_attrs = get_channel_data(rss_text=rss_text)
+    items_data, items_data_attrs = get_items_data(rss_text=rss_text)
+    channel_dict = create_channel_dict(
+        channel_data=channel_data, channel_data_attrs=channel_data_attrs
+    )
+    channel_dict["rss_url"] = rss_url
+    channel, created = Channel.objects.get_or_create(**channel_dict)
+    categories = create_category_list(channel_data_attrs=channel_data_attrs)
+    channel.categories.set(categories)
+    channel.save()
+
+    episodes_dict_list = create_episodes_dict_list(
+        items_data=items_data, items_data_attrs=items_data_attrs
+    )
+
+    episodes = [
+        Episode(**episode_dict, channel=channel)
+        for episode_dict in episodes_dict_list
+        if not Episode.objects.filter(guid=episode_dict.get("guid")).exists()
+    ]
+
+    Episode.objects.bulk_create(episodes)
