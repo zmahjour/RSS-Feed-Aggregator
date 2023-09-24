@@ -103,3 +103,12 @@ def create_channel_dict(channel_data, channel_data_attrs):
     return channel_dict
 
 
+def convert_explicit_to_boolean(explicit_value):
+    if explicit_value.lower() == "yes":
+        return True
+    elif explicit_value.lower() == "no":
+        return False
+    else:
+        return False
+
+
