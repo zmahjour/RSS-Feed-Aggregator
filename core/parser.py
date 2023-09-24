@@ -88,6 +88,11 @@ def create_category_list(channel_data_attrs):
 def create_channel_dict(channel_data, channel_data_attrs):
     namespace = "{http://www.itunes.com/dtds/podcast-1.0.dtd}"
 
+    try:
+        image_url = channel_data_attrs.get(f"{namespace}image").get("href")
+    except:
+        image_url = None
+
     channel_dict = {
         "title": channel_data.get("title"),
         "subtitle": channel_data.get(f"{namespace}subtitle"),
