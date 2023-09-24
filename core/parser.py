@@ -70,3 +70,18 @@ def convert_str_to_datetime(datetime_str):
         return None
 
 
+def create_category_list(channel_data_attrs):
+    namespace = "{http://www.itunes.com/dtds/podcast-1.0.dtd}"
+    categories = channel_data_attrs.get(f"{namespace}category")
+    category_list = []
+    existing_categories = []
+    for category in categories:
+        if not Category.objects.filter(title=category).exists():
+            category_list.append(Category(title=category))
+        else:
+            existing_categories.append(Category.objects.get(title=category))
+    categories = Category.objects.bulk_create(category_list)
+    categories += existing_categories
+    return categories
+
+
