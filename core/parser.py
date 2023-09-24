@@ -62,3 +62,11 @@ def get_items_data(rss_text):
     return items_data, items_data_attrs
 
 
+def convert_str_to_datetime(datetime_str):
+    datetime_format = "%a, %d %b %Y %H:%M:%S %z"
+    try:
+        datetime.strptime(datetime_str, datetime_format),
+    except:
+        return None
+
+
