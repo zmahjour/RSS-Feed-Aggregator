@@ -102,7 +102,7 @@ def create_channel_dict(channel_data, channel_data_attrs):
         "language": channel_data.get("language"),
         "owner_name": channel_data.get(f"{namespace}name"),
         "owner_email": channel_data.get(f"{namespace}email"),
-        "image_url": channel_data_attrs.get(f"{namespace}image").get("href"),
+        "image_url": image_url,
     }
 
     return channel_dict
