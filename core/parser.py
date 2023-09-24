@@ -37,3 +37,28 @@ def get_channel_data(rss_text):
 
     return channel_data, channel_data_attrs
 
+
+def get_items_data(rss_text):
+    root = ET.fromstring(rss_text)
+    items_data = []
+    items_data_attrs = []
+    for item in root.findall(".//item"):
+        item_data = {}
+        item_data_attrs = {}
+        for element in item.iter():
+            element_text = None
+
+            if element.tag != "item":
+                if element.text:
+                    element_text = element.text.strip()
+                item_data[element.tag] = element_text
+
+                if element.attrib:
+                    item_data_attrs[element.tag] = element.attrib
+
+        items_data.append(item_data)
+        items_data_attrs.append(item_data_attrs)
+
+    return items_data, items_data_attrs
+
+
