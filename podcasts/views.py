@@ -13,6 +13,7 @@ class RssView(APIView):
             rss_url = serialized_data.validated_data["rss_url"]
             create_update_channel_episodes(rss_url=rss_url)
             return Response(
-                data={"message": "Podcast created."}, status=status.HTTP_201_CREATED
+                data={"message": "Podcast updated successfully."},
+                status=status.HTTP_201_CREATED,
             )
         return Response(data=serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
