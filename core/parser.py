@@ -123,6 +123,11 @@ def create_episodes_dict_list(items_data, items_data_attrs):
     episodes_dict_list = []
 
     for item_data, item_data_attrs in zip(items_data, items_data_attrs):
+        try:
+            image_url = item_data_attrs.get(f"{namespace}image").get("href")
+        except:
+            image_url = None
+
         episode_dict = {
             "guid": item_data.get("guid"),
             "title": item_data.get("title"),
