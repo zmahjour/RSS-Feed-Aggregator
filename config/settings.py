@@ -37,12 +37,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # apps
+    # project apps
     "core.apps.CoreConfig",
     "podcasts.apps.PodcastsConfig",
     "interactions.apps.InteractionsConfig",
     "accounts.apps.AccountsConfig",
-    # framework
+    # 3rd party apps
     "rest_framework",
 ]
 
