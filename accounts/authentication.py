@@ -35,6 +35,14 @@ class JWTAuthentication(BaseAuthentication):
         except:
             return None
 
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        except jwt.exceptions.InvalidSignatureError:
+            raise exceptions.AuthenticationFailed("Invalid signature.")
+        except jwt.exceptions.ExpiredSignatureError:
+            raise exceptions.AuthenticationFailed("Access token expired.")
+        except:
+            raise exceptions.AuthenticationFailed("Invalid token.")
 
     @classmethod
     def get_token_from_header(cls, header):
