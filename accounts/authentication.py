@@ -25,3 +25,6 @@ class EmailBackend(BaseBackend):
             return None
 
 
+class JWTAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
