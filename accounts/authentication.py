@@ -44,6 +44,11 @@ class JWTAuthentication(BaseAuthentication):
         except:
             raise exceptions.AuthenticationFailed("Invalid token.")
 
+        jti = payload.get("jti")
+
+        if not cache.get(jti):
+            raise exceptions.AuthenticationFailed("Invalid token.")
+
     @classmethod
     def get_token_from_header(cls, header):
         token = header.replace("Bearer", "").replace(" ", "")
