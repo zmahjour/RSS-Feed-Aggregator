@@ -49,6 +49,14 @@ class JWTAuthentication(BaseAuthentication):
         if not cache.get(jti):
             raise exceptions.AuthenticationFailed("Invalid token.")
 
+        try:
+            user = User.objects.filter(id=payload["user_id"]).first()
+            if user is None:
+                raise User.DoesNotExist("User not found.")
+            return user
+        except:
+            raise exceptions.AuthenticationFailed("User id not found in JWT.")
+
     @classmethod
     def get_token_from_header(cls, header):
         token = header.replace("Bearer", "").replace(" ", "")
