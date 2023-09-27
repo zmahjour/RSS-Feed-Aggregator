@@ -4,3 +4,6 @@ import jwt
 import datetime
 
 
+class JWTToken:
+    jti = str(uuid.uuid4())
+
