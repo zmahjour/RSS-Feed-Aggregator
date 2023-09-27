@@ -28,6 +28,13 @@ class EmailBackend(BaseBackend):
 class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
+        try:
+            token = self.get_token_from_header(authorization_header)
+            if not token:
+                return None
+        except:
+            return None
+
 
     @classmethod
     def get_token_from_header(cls, header):
