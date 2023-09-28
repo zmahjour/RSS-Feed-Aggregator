@@ -149,7 +149,7 @@ def create_episodes_dict_list(items_data, items_data_attrs):
     return episodes_dict_list
 
 
-def create_update_channel_episodes(rss_url):
+def create_or_update_channel_and_episodes(rss_url):
     rss_text = get_rss_text(rss_url=rss_url)
     channel_data, channel_data_attrs = get_channel_data(rss_text=rss_text)
     items_data, items_data_attrs = get_items_data(rss_text=rss_text)
