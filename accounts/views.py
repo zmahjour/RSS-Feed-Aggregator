@@ -55,3 +55,16 @@ class UserLoginView(APIView):
             )
 
 
+class UserLogoutView(APIView):
+    def post(self, request):
+        access_token = request.META.get("HTTP_AUTHORIZATION")
+        payload = jwt.decode(access_token, settings.SECRET_KEY, algorithms=["HS256"])
+
+        jti = payload.get("jti")
+        cache.delete(jti)
+
+        return Response(
+            {"message": "You logged out successfully."}, status=status.HTTP_200_OK
+        )
+
+
