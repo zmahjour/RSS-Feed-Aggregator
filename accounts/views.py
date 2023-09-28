@@ -68,3 +68,53 @@ class UserLogoutView(APIView):
         )
 
 
+class ObtainAccessTokenView(APIView):
+    def post(self, request):
+        refresh_token = request.data.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                {"error": "Refresh token is missing."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            payload = jwt.decode(
+                refresh_token, settings.SECRET_KEY, algorithms=["HS256"]
+            )
+            jti = payload.get("jti")
+        except:
+            return Response(
+                {"error": "Invalid refresh token."}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if not cache.get(jti):
+            return Response(
+                {"error": "Refresh token not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            user = User.objects.filter(id=payload["user_id"]).first()
+            if user is None:
+                return Response(
+                    {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+                )
+        except:
+            return Response(
+                {"message": "User id not found in JWT."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        cache.delete(jti)
+        jwt_token = JWTToken()
+        jti = jwt_token.jti
+        access_token = jwt_token.generate_access_token(user=user)
+        refresh_token, refresh_exp_seconds = jwt_token.generate_refresh_token(user=user)
+        cache.set(key=jti, value="whitelist", timeout=refresh_exp_seconds)
+
+        return Response(
+            data={
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+            }
+        )
