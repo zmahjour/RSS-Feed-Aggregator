@@ -8,7 +8,7 @@ from .models import User
 
 
 class EmailBackend(BaseBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
+    def authenticate(self, request, username=None, password=None):
         try:
             user = User.objects.get(email=username)
         except User.DoesNotExist:
