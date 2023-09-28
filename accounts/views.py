@@ -11,3 +11,13 @@ from .utils import JWTToken
 from .models import User
 
 
+class UserRegisterView(APIView):
+    authentication_classes = []
+
+    def post(self, request):
+        serialized_data = UserRegisterSerializer(data=request.data)
+        if serialized_data.is_valid(raise_exception=True):
+            serialized_data.save()
+            return Response(data=serialized_data.data, status=status.HTTP_201_CREATED)
+
+
