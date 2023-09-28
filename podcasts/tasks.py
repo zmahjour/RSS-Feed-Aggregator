@@ -6,5 +6,6 @@ from core.parser import create_or_update_channel_and_episodes
 def create_or_update(self, rss_url):
     try:
         create_or_update_channel_and_episodes(rss_url=rss_url)
-    except:
+    except Exception as e:
+        print(e)
         self.retry()
