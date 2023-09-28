@@ -30,7 +30,7 @@ class JWTToken:
             "jti": self.jti,
         }
 
-        refresh_exp_seconds = refresh_exp.total_seconds
+        refresh_exp_seconds = refresh_exp.total_seconds()
         refresh_token = jwt.encode(
             refresh_token_payload, settings.SECRET_KEY, algorithm="HS256"
         )
