@@ -25,7 +25,7 @@ class Channel(models.Model):
     language = models.CharField(max_length=25, null=True, blank=True)
     owner_name = models.CharField(max_length=100, null=True, blank=True)
     owner_email = models.EmailField(null=True, blank=True)
-    image_url = models.TextField(null=True, blank=True)
+    image_url = models.URLField(max_length=500, null=True, blank=True)
     categories = models.ManyToManyField(Category, blank=True)
 
     def __str__(self):
