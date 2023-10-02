@@ -16,7 +16,7 @@ class Category(models.Model):
 
 
 class Channel(models.Model):
-    rss_url = models.URLField(unique=True)
+    rss = models.OneToOneField(Rss, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     subtitle = models.TextField(null=True, blank=True)
     description = models.TextField()
