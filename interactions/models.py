@@ -32,18 +32,23 @@ class Favorite(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET("deleted account"))
-    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     reply = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     is_reply = models.BooleanField(default=False)
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
 
     class Meta:
         ordering = ["-created"]
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
 
     def __str__(self):
-        return f"{self.user} commented on {self.episode}"
+        return self.id
 
 
 class Playlist(models.Model):
