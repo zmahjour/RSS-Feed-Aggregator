@@ -1,6 +1,13 @@
 from django.db import models
 
 
+class Rss(models.Model):
+    rss_url = models.URLField(max_length=500, unique=True)
+
+    def __str__(self):
+        return self.id
+
+
 class Category(models.Model):
     title = models.CharField(max_length=50)
 
