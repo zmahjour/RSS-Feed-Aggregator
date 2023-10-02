@@ -42,9 +42,9 @@ class Episode(models.Model):
     pub_date = models.DateTimeField(null=True, blank=True)
     duration = models.CharField(max_length=10, null=True, blank=True)
     explicit = models.BooleanField(default=False)
-    episode_type = models.CharField(max_length=25, null=True, blank=True)
-    image_url = models.TextField(null=True, blank=True)
-    audio_url = models.TextField()
+    episode_type = models.CharField(max_length=50, null=True, blank=True)
+    image_url = models.URLField(max_length=500, null=True, blank=True)
+    audio_url = models.URLField(max_length=500)
 
     def __str__(self):
         return self.title
