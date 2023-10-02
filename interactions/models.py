@@ -1,7 +1,8 @@
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-
 from accounts.models import User
-from podcasts.models import Channel, Episode
+from podcasts.models import Channel
 
 
 class Subscription(models.Model):
