@@ -144,7 +144,7 @@ def create_episodes_dict_list(items_data, items_data_attrs):
             "explicit": convert_explicit_to_boolean(
                 item_data.get(f"{namespace}explicit")
             ),
-            "episode_type": item_data.get(f"{namespace}episode_type"),
+            "episode_type": item_data.get(f"{namespace}episodeType"),
             "image_url": image_url,
             "audio_url": item_data_attrs.get("enclosure").get("url"),
         }
