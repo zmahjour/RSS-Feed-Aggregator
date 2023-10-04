@@ -44,7 +44,7 @@ def get_items_data(rss_text, last_added_episode_guid=None):
     items_data_attrs = []
     for item in root.findall(".//item"):
         if last_added_episode_guid:
-            guid = item.find(guid)
+            guid = item.find("guid")
             if guid.text.strip() == last_added_episode_guid:
                 break
 
