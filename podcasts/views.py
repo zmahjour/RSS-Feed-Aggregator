@@ -1,9 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from django.db import transaction
 from .serializers import RssSerializer
-from .tasks import create_or_update
+from .models import Rss
+from .tasks import read_rss_data_task, create_or_update_task
 
 
 class RssView(APIView):
