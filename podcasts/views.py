@@ -17,3 +17,17 @@ class RssView(APIView):
                 data={"message": "New Rss instance created."},
                 status=status.HTTP_201_CREATED,
             )
+
+
+class CreateOrUpdateView(APIView):
+    def get(self, request):
+        result = read_rss_data_task.delay()
+        rss_urls = result.get()
+        for rss_url in rss_urls:
+            with transaction.atomic():
+                try:
+                    create_or_update_task(rss_url=rss_url)
+                    print(f"Podcast with '{rss_url}' url updated successfully.")
+                except Exception as e:
+                    print(f"error: {str(e)}")
+        return Response(data={"message": "All podcasts have been updated."})
