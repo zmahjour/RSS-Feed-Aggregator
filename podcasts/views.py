@@ -12,8 +12,8 @@ class RssView(APIView):
         serialized_data = RssSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
             rss_url = serialized_data.validated_data["rss_url"]
-            create_or_update.apply_async(kwargs={"rss_url": rss_url})
+            Rss.objects.create(rss_url=rss_url)
             return Response(
-                data={"message": "Podcast updated successfully."},
+                data={"message": "New Rss instance created."},
                 status=status.HTTP_201_CREATED,
             )
