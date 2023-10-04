@@ -154,59 +154,29 @@ def create_episodes_dict_list(items_data, items_data_attrs):
     return episodes_dict_list
 
 
-# def create_or_update_channel_and_episodes(rss_url):
-#     rss_text = get_rss_text(rss_url=rss_url)
-#     channel_data, channel_data_attrs = get_channel_data(rss_text=rss_text)
-#     items_data, items_data_attrs = get_items_data(rss_text=rss_text)
-
-#     channel_dict = create_channel_dict(
-#         channel_data=channel_data, channel_data_attrs=channel_data_attrs
-#     )
-#     channel_dict["rss_url"] = rss_url
-#     channel, created = Channel.objects.get_or_create(**channel_dict)
-#     categories = create_category_list(channel_data_attrs=channel_data_attrs)
-#     channel.categories.set(categories)
-#     channel.save()
-
-#     episodes_dict_list = create_episodes_dict_list(
-#         items_data=items_data, items_data_attrs=items_data_attrs
-#     )
-
-#     episodes = [
-#         Episode(**episode_dict, channel=channel)
-#         for episode_dict in episodes_dict_list
-#         if not Episode.objects.filter(guid=episode_dict.get("guid")).exists()
-#     ]
-
-#     Episode.objects.bulk_create(episodes)
-
-
-def create_or_update_channel(rss_url):
+def create_or_update(rss_url):
+    # update channel
     rss = Rss.objects.get(rss_url=rss_url)
     rss_text = get_rss_text(rss_url=rss_url)
     channel_data, channel_data_attrs = get_channel_data(rss_text=rss_text)
     channel_dict = create_channel_dict(
         channel_data=channel_data, channel_data_attrs=channel_data_attrs
     )
-    channel_dict["rss"] = rss
-
-    channel, created = Channel.objects.get_or_create(rss=rss)
-
-    if not created:
+    try:
+        channel = Channel.objects.get(rss=rss)
         existing_channel_dict = model_to_dict(channel)
 
         for key in channel_dict:
             if channel_dict[key] != existing_channel_dict[key]:
                 setattr(channel, key, channel_dict[key])
+    except:
+        channel = Channel.objects.create(**channel_dict, rss=rss)
 
     categories = create_category_list(channel_data_attrs=channel_data_attrs)
     channel.categories.set(categories)
     channel.save()
 
-    return rss_text, channel
-
-
-def create_or_update_episodes(rss_text, channel):
+    # update episodes
     try:
         last_added_episode_guid = Episode.objects.filter(channel=channel).last().guid
     except:
@@ -215,6 +185,7 @@ def create_or_update_episodes(rss_text, channel):
     items_data, items_data_attrs = get_items_data(
         rss_text=rss_text, last_added_episode_guid=last_added_episode_guid
     )
+
     episodes_dict_list = create_episodes_dict_list(
         items_data=items_data, items_data_attrs=items_data_attrs
     )
@@ -224,8 +195,3 @@ def create_or_update_episodes(rss_text, channel):
     ]
 
     Episode.objects.bulk_create(episodes)
-
-
-def create_or_update(rss_url):
-    rss_text, channel = create_or_update_channel(rss_url=rss_url)
-    create_or_update_episodes(rss_text=rss_text, channel=channel)
