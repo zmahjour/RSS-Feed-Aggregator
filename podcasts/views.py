@@ -35,4 +35,7 @@ class CreateOrUpdateView(APIView):
                     print(f"Podcast with '{rss_url}' url updated successfully.")
                 except Exception as e:
                     print(f"error: {str(e)}")
-        return Response(data={"message": "All podcasts have been updated."})
+        return Response(
+            data={"message": "All podcasts have been updated."},
+            status=status.HTTP_200_OK,
+        )
