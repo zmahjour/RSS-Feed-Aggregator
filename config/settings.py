@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import environ
 
 # Initialise environment variables
@@ -167,3 +168,7 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = env("REDIS_LOCATION")
+# Custom JWT
+
+ACCESS_EXPIRE_TIME = timedelta(days=1)
+REFRESH_EXPIRE_TIME = timedelta(days=30)
