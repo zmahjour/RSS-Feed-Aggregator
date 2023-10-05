@@ -31,7 +31,7 @@ class CreateOrUpdateView(APIView):
         for rss_url in rss_urls:
             with transaction.atomic():
                 try:
-                    create_or_update_task(rss_url=rss_url)
+                    create_or_update_task.delay(rss_url=rss_url)
                     print(f"Podcast with '{rss_url}' url updated successfully.")
                 except Exception as e:
                     print(f"error: {str(e)}")
