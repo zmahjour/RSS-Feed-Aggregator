@@ -1,7 +1,8 @@
+from django.forms.models import model_to_dict
 import xml.etree.ElementTree as ET
 import requests
 from datetime import datetime
-from podcasts.models import Category, Channel, Episode
+from podcasts.models import Category, Channel, Episode, Rss
 
 
 def get_rss_text(rss_url):
@@ -37,11 +38,16 @@ def get_channel_data(rss_text):
     return channel_data, channel_data_attrs
 
 
-def get_items_data(rss_text):
+def get_items_data(rss_text, last_added_episode_guid=None):
     root = ET.fromstring(rss_text)
     items_data = []
     items_data_attrs = []
     for item in root.findall(".//item"):
+        if last_added_episode_guid:
+            guid = item.find("guid")
+            if guid.text.strip() == last_added_episode_guid:
+                break
+
         item_data = {}
         item_data_attrs = {}
         for element in item.iter():
@@ -138,7 +144,7 @@ def create_episodes_dict_list(items_data, items_data_attrs):
             "explicit": convert_explicit_to_boolean(
                 item_data.get(f"{namespace}explicit")
             ),
-            "episode_type": item_data.get(f"{namespace}episode_type"),
+            "episode_type": item_data.get(f"{namespace}episodeType"),
             "image_url": image_url,
             "audio_url": item_data_attrs.get("enclosure").get("url"),
         }
@@ -148,28 +154,44 @@ def create_episodes_dict_list(items_data, items_data_attrs):
     return episodes_dict_list
 
 
-def create_or_update_channel_and_episodes(rss_url):
+def create_or_update(rss_url):
+    # update channel
+    rss = Rss.objects.get(rss_url=rss_url)
     rss_text = get_rss_text(rss_url=rss_url)
     channel_data, channel_data_attrs = get_channel_data(rss_text=rss_text)
-    items_data, items_data_attrs = get_items_data(rss_text=rss_text)
-
     channel_dict = create_channel_dict(
         channel_data=channel_data, channel_data_attrs=channel_data_attrs
     )
-    channel_dict["rss_url"] = rss_url
-    channel, created = Channel.objects.get_or_create(**channel_dict)
+    try:
+        channel = Channel.objects.get(rss=rss)
+        existing_channel_dict = model_to_dict(channel)
+
+        for key in channel_dict:
+            if channel_dict[key] != existing_channel_dict[key]:
+                setattr(channel, key, channel_dict[key])
+    except:
+        channel = Channel.objects.create(**channel_dict, rss=rss)
+
     categories = create_category_list(channel_data_attrs=channel_data_attrs)
     channel.categories.set(categories)
     channel.save()
+
+    # update episodes
+    try:
+        last_added_episode_guid = Episode.objects.filter(channel=channel).last().guid
+    except:
+        last_added_episode_guid = None
+
+    items_data, items_data_attrs = get_items_data(
+        rss_text=rss_text, last_added_episode_guid=last_added_episode_guid
+    )
 
     episodes_dict_list = create_episodes_dict_list(
         items_data=items_data, items_data_attrs=items_data_attrs
     )
 
     episodes = [
-        Episode(**episode_dict, channel=channel)
-        for episode_dict in episodes_dict_list
-        if not Episode.objects.filter(guid=episode_dict.get("guid")).exists()
+        Episode(**episode_dict, channel=channel) for episode_dict in episodes_dict_list
     ]
 
     Episode.objects.bulk_create(episodes)

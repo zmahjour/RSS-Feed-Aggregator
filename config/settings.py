@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import environ
 
 # Initialise environment variables
@@ -152,6 +153,7 @@ AUTHENTICATION_BACKENDS = [
     "accounts.authentication.EmailBackend",
 ]
 
+
 # Rest framework
 
 REST_FRAMEWORK = {
@@ -160,10 +162,18 @@ REST_FRAMEWORK = {
     ]
 }
 
+
 # Celery settings
 
-CELERY_BROKER_URL = env("REDIS_LOCATION")
+CELERY_BROKER_URL = env("BROKER_URL")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = env("REDIS_LOCATION")
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+
+# Custom JWT
+
+ACCESS_EXPIRE_TIME = timedelta(days=1)
+REFRESH_EXPIRE_TIME = timedelta(days=30)
