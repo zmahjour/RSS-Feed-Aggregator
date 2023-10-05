@@ -9,6 +9,8 @@ from .tasks import read_rss_data_task, create_or_update_task
 
 
 class RssView(APIView):
+    permission_classes = [IsAdminUser]
+
     def post(self, request):
         serialized_data = RssSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
@@ -21,6 +23,8 @@ class RssView(APIView):
 
 
 class CreateOrUpdateView(APIView):
+    permission_classes = [IsAdminUser]
+
     def get(self, request):
         result = read_rss_data_task.delay()
         rss_urls = result.get()
