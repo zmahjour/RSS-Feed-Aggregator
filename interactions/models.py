@@ -31,7 +31,7 @@ class Favorite(models.Model):
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET("deleted account"))
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     reply = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     is_reply = models.BooleanField(default=False)
     content = models.TextField()
