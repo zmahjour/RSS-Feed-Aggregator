@@ -2,6 +2,7 @@ from django.conf import settings
 import uuid
 import jwt
 import datetime
+import pytz
 
 
 class JWTToken:
@@ -10,8 +11,9 @@ class JWTToken:
     def generate_access_token(self, user):
         access_token_payload = {
             "user_id": user.id,
-            "exp": datetime.datetime.now() + settings.ACCESS_EXPIRE_TIME,
-            "iat": datetime.datetime.now(),
+            "exp": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran"))
+            + settings.ACCESS_EXPIRE_TIME,
+            "iat": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran")),
             "jti": self.jti,
         }
 
@@ -23,8 +25,9 @@ class JWTToken:
     def generate_refresh_token(self, user):
         refresh_token_payload = {
             "user_id": user.id,
-            "exp": datetime.datetime.now() + settings.REFRESH_EXPIRE_TIME,
-            "iat": datetime.datetime.now(),
+            "exp": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran"))
+            + settings.REFRESH_EXPIRE_TIME,
+            "iat": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran")),
             "jti": self.jti,
         }
 
