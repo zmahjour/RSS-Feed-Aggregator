@@ -41,18 +41,21 @@ services:
       - 8000:8000
 
   celery:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - C_FORCE_ROOT="True"
     container_name: celery
-    command: "celery -A config.celery worker -l INFO"
+    command: "celery -A config worker -l info"
     depends_on:
       - db
-      - app
       - redis
-    image: app-image
-    environment:
-      - C_FORCE_ROOT="true"
+      - app
+    restart: always
     networks:
       - main
-    restart: always
+
 
 networks:
   main:
