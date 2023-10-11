@@ -14,8 +14,17 @@ services:
       - 5432:5432
 
   redis:
+    image: redis:7.2
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     container_name: redis
-    image: redis
+    networks:
+      - main
+    ports:
+      - 6380:6379
 
   app:
     build: .
