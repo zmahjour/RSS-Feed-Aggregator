@@ -1,17 +1,17 @@
 services:
   db:
-    container_name: postgres_db
-    image: postgres
+    image: postgres:14.9
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=rss
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=zmahjour@1375
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    container_name: postgres
     networks:
       - main
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - 5432:5432
 
   redis:
     container_name: redis
