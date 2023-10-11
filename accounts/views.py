@@ -108,7 +108,8 @@ class ObtainAccessTokenView(APIView):
         jwt_token = JWTToken()
         jti = jwt_token.jti
         access_token = jwt_token.generate_access_token(user=user)
-        refresh_token, refresh_exp_seconds = jwt_token.generate_refresh_token(user=user)
+        refresh_token = jwt_token.generate_refresh_token(user=user)
+        refresh_exp_seconds = settings.REFRESH_EXPIRE_TIME.total_seconds()
         cache.set(key=jti, value="whitelist", timeout=refresh_exp_seconds)
 
         return Response(
