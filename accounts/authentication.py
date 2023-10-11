@@ -53,7 +53,7 @@ class JWTAuthentication(BaseAuthentication):
             user = User.objects.filter(id=payload["user_id"]).first()
             if user is None:
                 raise User.DoesNotExist("User not found.")
-            return user
+            return user, None
         except:
             raise exceptions.AuthenticationFailed("User id not found in JWT.")
 
