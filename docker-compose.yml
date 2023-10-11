@@ -1,51 +1,65 @@
 services:
   db:
-    container_name: postgres_db
-    image: postgres
+    image: postgres:14.9
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=rss
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=zmahjour@1375
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    container_name: postgres
     networks:
       - main
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - 5432:5432
 
   redis:
+    image: redis:7.2
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     container_name: redis
-    image: redis
+    networks:
+      - main
+    ports:
+      - 6380:6379
 
   app:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    container_name: django_app
     volumes:
-      - .:/src/rss
+      - .:/app
+    container_name: rss_app
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
+      - redis
+    networks:
+      - main
     ports:
       - 8000:8000
+
+  celery:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - C_FORCE_ROOT="True"
+    container_name: celery
+    command: "celery -A config worker -l info"
+    depends_on:
+      - db
+      - redis
+      - app
+    restart: always
     networks:
       - main
 
-  celery:
-    container_name: celery
-    command: "celery -A config.celery worker -l INFO"
-    depends_on:
-      - db
-      - app
-      - redis
-    image: app-image
-    environment:
-      - C_FORCE_ROOT="true"
-    networks:
-      - main
-    restart: always
 
 networks:
   main:
 
 volumes:
   postgres_data:
+  redis_data:

@@ -14,19 +14,21 @@ from pathlib import Path
 from datetime import timedelta
 import environ
 
-# Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env(env_file=f"{BASE_DIR}/.env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-bz5e6sksr)k-!pyclua7e8&6kqo4q$7b8f=96hs8xv98lrcj9s"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -100,7 +102,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env("REDIS_LOCATION"),
+        "LOCATION": f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/0",
     }
 }
 
@@ -165,11 +167,11 @@ REST_FRAMEWORK = {
 
 # Celery settings
 
-CELERY_BROKER_URL = env("BROKER_URL")
+CELERY_BROKER_URL = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_BACKEND = env("REDIS_LOCATION")
+CELERY_RESULT_BACKEND = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}/0"
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 
