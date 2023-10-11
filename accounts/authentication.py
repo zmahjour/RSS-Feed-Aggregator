@@ -41,7 +41,8 @@ class JWTAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed("Invalid signature.")
         except jwt.exceptions.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed("Access token expired.")
-        except:
+        except Exception as e:
+            print(e)
             raise exceptions.AuthenticationFailed("Invalid token.")
 
         jti = payload.get("jti")
