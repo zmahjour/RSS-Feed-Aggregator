@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAdminUser
 from django.db import transaction
 from .serializers import RssSerializer
 from .models import Rss
-from .tasks import read_rss_data_task, create_or_update_task
+from .tasks import create_or_update_task
 
 
 class RssView(APIView):
@@ -26,8 +26,7 @@ class CreateOrUpdateView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        result = read_rss_data_task.delay()
-        rss_urls = result.get()
+        rss_urls = [rss.rss_url for rss in Rss.objects.all()]
         for rss_url in rss_urls:
             with transaction.atomic():
                 try:
