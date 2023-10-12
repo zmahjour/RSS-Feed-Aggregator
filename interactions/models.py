@@ -27,7 +27,7 @@ class Favorite(models.Model):
         ]
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Comment(models.Model):
@@ -48,7 +48,7 @@ class Comment(models.Model):
         ]
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Playlist(models.Model):
@@ -75,4 +75,4 @@ class Bookmark(models.Model):
         ]
 
     def __str__(self):
-        return self.id
+        return str(self.id)
