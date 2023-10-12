@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     # 3rd party apps
     "rest_framework",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
