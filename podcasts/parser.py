@@ -38,15 +38,14 @@ def get_channel_data(rss_text):
     return channel_data, channel_data_attrs
 
 
-def get_items_data(rss_text, last_added_episode_guid=None):
+def get_items_data(rss_text):
     root = ET.fromstring(rss_text)
     items_data = []
     items_data_attrs = []
     for item in root.findall(".//item"):
-        if last_added_episode_guid:
-            guid = item.find("guid")
-            if guid.text.strip() == last_added_episode_guid:
-                break
+        guid = item.find("guid").text.strip()
+        if Episode.objects.filter(guid=guid).exists():
+            break
 
         item_data = {}
         item_data_attrs = {}
@@ -177,14 +176,7 @@ def create_or_update(rss_url):
     channel.save()
 
     # update episodes
-    try:
-        last_added_episode_guid = Episode.objects.filter(channel=channel).last().guid
-    except:
-        last_added_episode_guid = None
-
-    items_data, items_data_attrs = get_items_data(
-        rss_text=rss_text, last_added_episode_guid=last_added_episode_guid
-    )
+    items_data, items_data_attrs = get_items_data(rss_text=rss_text)
 
     episodes_dict_list = create_episodes_dict_list(
         items_data=items_data, items_data_attrs=items_data_attrs

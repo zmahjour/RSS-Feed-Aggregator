@@ -5,7 +5,7 @@ class Rss(models.Model):
     rss_url = models.URLField(max_length=500, unique=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Category(models.Model):
