@@ -47,7 +47,21 @@ services:
     environment:
       - C_FORCE_ROOT="True"
     container_name: celery
-    command: "celery -A config worker -l info"
+    command: "celery -A config worker -l INFO"
+    depends_on:
+      - db
+      - redis
+      - app
+    restart: always
+    networks:
+      - main
+
+  celery_beat:
+    build: .
+    volumes:
+      - .:/app
+    container_name: celery_beat
+    command: "celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     depends_on:
       - db
       - redis
