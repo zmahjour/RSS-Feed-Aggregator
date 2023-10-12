@@ -1,18 +1,16 @@
-from celery import shared_task
+from celery import shared_task, Task
 from celery.utils.log import get_task_logger
-from .models import Rss
 from .parser import create_or_update
 
 
 logger = get_task_logger(__name__)
 
 
-# class BaseTaskWithRetry(Task):
-#     autoretry_for = (TypeError,)
-#     max_retries = 5
-#     retry_backoff = True
-#     retry_backoff_max = 700
-#     retry_jitter = False
+class BaseTaskWithRetry(Task):
+    autoretry_for = (Exception,)
+    max_retries = 5
+    retry_backoff = 2
+    retry_jitter = False
 
 
 @shared_task
