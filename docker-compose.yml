@@ -1,4 +1,20 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    container_name: rabbitmq
+    restart: always
+    networks:
+      - rss_network
+    ports:
+      - 5672:5672
+      - 15672:15672
+
   db:
     image: postgres:14.9
     volumes:
