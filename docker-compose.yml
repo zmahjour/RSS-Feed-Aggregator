@@ -1,15 +1,34 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    container_name: rabbitmq
+    restart: always
+    networks:
+      - rss_network
+    ports:
+      - 5672:5672
+      - 15672:15672
+
   db:
     image: postgres:14.9
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     container_name: postgres
+    restart: always
     networks:
-      - main
+      - rss_network
     ports:
       - 5432:5432
 
@@ -17,12 +36,14 @@ services:
     image: redis:7.2
     volumes:
       - redis_data:/data
+    env_file:
+      - .env
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
     container_name: redis
     networks:
-      - main
+      - rss_network
     ports:
       - 6380:6379
 
@@ -30,13 +51,16 @@ services:
     build: .
     volumes:
       - .:/app
+    env_file:
+      - .env
     container_name: rss_app
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
+      - rabbitmq
       - db
       - redis
     networks:
-      - main
+      - rss_network
     ports:
       - 8000:8000
 
@@ -54,7 +78,7 @@ services:
       - app
     restart: always
     networks:
-      - main
+      - rss_network
 
   celery_beat:
     build: .
@@ -68,12 +92,36 @@ services:
       - app
     restart: always
     networks:
-      - main
+      - rss_network
+
+  register_consumer:
+    build: .
+    container_name: register_consumer
+    command: "python manage.py runconsumer register"
+    depends_on:
+      - rabbitmq
+      - app
+    restart: always
+    networks:
+      - rss_network
+
+  login_consumer:
+    build: .
+    container_name: login_consumer
+    command: "python manage.py runconsumer login"
+    depends_on:
+      - rabbitmq
+      - app
+    restart: always
+    networks:
+      - rss_network
 
 
 networks:
-  main:
+  rss_network:
 
 volumes:
   postgres_data:
   redis_data:
+  rabbitmq_data:
+  rabbitmq_log:

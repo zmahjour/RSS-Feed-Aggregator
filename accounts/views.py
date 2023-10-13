@@ -9,6 +9,7 @@ import jwt
 from .serializers import UserRegisterSerializer, UserLoginSerializer
 from .utils import JWTToken
 from .models import User
+from core.send import publisher
 
 
 class UserRegisterView(APIView):
@@ -18,6 +19,15 @@ class UserRegisterView(APIView):
         serialized_data = UserRegisterSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
             serialized_data.save()
+
+            username = serialized_data.validated_data.get("username")
+            pub_data = {
+                "username": username,
+                "action": "register",
+                "notification": f"{username} registerd.",
+            }
+            publisher(body=pub_data)
+
             return Response(data=serialized_data.data, status=status.HTTP_201_CREATED)
 
 
@@ -45,6 +55,13 @@ class UserLoginView(APIView):
             refresh_token = jwt_token.generate_refresh_token(user=user)
 
             cache.set(key=jti, value="whitelist", timeout=refresh_exp_seconds)
+
+            pub_data = {
+                "username": user.username,
+                "action": "login",
+                "notification": f"{user.username} logged in.",
+            }
+            publisher(body=pub_data)
 
             return Response(
                 data={
