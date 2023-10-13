@@ -1,6 +1,8 @@
 from celery import shared_task, Task
 from celery.utils.log import get_task_logger
+from django.db import transaction
 from .parser import create_or_update
+from .models import Rss
 
 
 logger = get_task_logger(__name__)
