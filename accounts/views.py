@@ -19,6 +19,15 @@ class UserRegisterView(APIView):
         serialized_data = UserRegisterSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
             serialized_data.save()
+
+            username = serialized_data.validated_data.get("username")
+            pub_data = {
+                "username": username,
+                "action": "register",
+                "notification": f"{username} registerd.",
+            }
+            publisher(body=pub_data)
+
             return Response(data=serialized_data.data, status=status.HTTP_201_CREATED)
 
 
