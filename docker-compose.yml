@@ -96,6 +96,8 @@ services:
 
   register_consumer:
     build: .
+    env_file:
+      - .env
     container_name: register_consumer
     command: "python manage.py runconsumer register"
     depends_on:
@@ -107,6 +109,8 @@ services:
 
   login_consumer:
     build: .
+    env_file:
+      - .env
     container_name: login_consumer
     command: "python manage.py runconsumer login"
     depends_on:
