@@ -56,6 +56,13 @@ class UserLoginView(APIView):
 
             cache.set(key=jti, value="whitelist", timeout=refresh_exp_seconds)
 
+            pub_data = {
+                "username": user.username,
+                "action": "login",
+                "notification": f"{user.username} logged in.",
+            }
+            publisher(body=pub_data)
+
             return Response(
                 data={
                     "access_token": access_token,
