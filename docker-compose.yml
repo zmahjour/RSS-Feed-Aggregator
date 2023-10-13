@@ -19,13 +19,16 @@ services:
     image: postgres:14.9
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     container_name: postgres
+    restart: always
     networks:
-      - main
+      - rss_network
     ports:
       - 5432:5432
 
@@ -33,12 +36,14 @@ services:
     image: redis:7.2
     volumes:
       - redis_data:/data
+    env_file:
+      - .env
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
     container_name: redis
     networks:
-      - main
+      - rss_network
     ports:
       - 6380:6379
 
@@ -46,13 +51,16 @@ services:
     build: .
     volumes:
       - .:/app
+    env_file:
+      - .env
     container_name: rss_app
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
+      - rabbitmq
       - db
       - redis
     networks:
-      - main
+      - rss_network
     ports:
       - 8000:8000
 
@@ -70,7 +78,7 @@ services:
       - app
     restart: always
     networks:
-      - main
+      - rss_network
 
   celery_beat:
     build: .
@@ -110,8 +118,10 @@ services:
 
 
 networks:
-  main:
+  rss_network:
 
 volumes:
   postgres_data:
   redis_data:
+  rabbitmq_data:
+  rabbitmq_log:
