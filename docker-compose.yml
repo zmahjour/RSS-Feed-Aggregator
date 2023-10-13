@@ -84,7 +84,29 @@ services:
       - app
     restart: always
     networks:
-      - main
+      - rss_network
+
+  register_consumer:
+    build: .
+    container_name: register_consumer
+    command: "python manage.py runconsumer register"
+    depends_on:
+      - rabbitmq
+      - app
+    restart: always
+    networks:
+      - rss_network
+
+  login_consumer:
+    build: .
+    container_name: login_consumer
+    command: "python manage.py runconsumer login"
+    depends_on:
+      - rabbitmq
+      - app
+    restart: always
+    networks:
+      - rss_network
 
 
 networks:
