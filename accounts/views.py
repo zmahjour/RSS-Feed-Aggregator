@@ -9,6 +9,7 @@ import jwt
 from .serializers import UserRegisterSerializer, UserLoginSerializer
 from .utils import JWTToken
 from .models import User
+from core.send import publisher
 
 
 class UserRegisterView(APIView):
