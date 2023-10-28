@@ -24,3 +24,16 @@ class ElasticsearchHandler(logging.Handler):
     def timestamp(self):
         return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
+    def emit(self, record):
+        try:
+            log_data = json.loads(self.format(record))
+            log_data["@timestamp"] = self.timestamp
+            log_data["log_level"] = record.levelname
+
+            self.es.index(index=self.index_name, document=log_data)
+
+        except Exception as e:
+            self.es.index(
+                index=self.index_name,
+                document={"@timestamp": self.timestamp, "error": e},
+            )
