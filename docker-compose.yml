@@ -32,6 +32,22 @@ services:
     ports:
       - 5432:5432
 
+  elasticsearch:
+    image: elasticsearch:8.10.2
+    container_name: elasticsearch
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    restart: always
+    networks:
+      - rss_network
+    ports:
+      - 9200:9200
   redis:
     image: redis:7.2
     volumes:
