@@ -30,3 +30,10 @@ class LoggingMiddleware:
 
         return request_data
 
+    def get_response_data(self, response):
+        response_data = {
+            "response_time": str(datetime.now(tz=pytz.timezone("Asia/Tehran"))),
+            "status_code": response.status_code,
+        }
+
+        return response_data
