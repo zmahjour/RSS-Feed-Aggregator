@@ -15,3 +15,8 @@ class ElasticsearchHandler(logging.Handler):
             f"http://{settings.ELASTICSEARCH_HOST}:{settings.ELASTICSEARCH_PORT}"
         )
 
+    @property
+    def index_name(self):
+        date = datetime.now(tz=pytz.timezone("Asia/Tehran")).strftime("%Y-%m-%d")
+        return f"{self.prefix}-{date}"
+
