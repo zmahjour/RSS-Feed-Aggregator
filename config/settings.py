@@ -196,3 +196,24 @@ ELASTICSEARCH_PORT = env("ELASTICSEARCH_PORT")
 
 ACCESS_EXPIRE_TIME = timedelta(days=1)
 REFRESH_EXPIRE_TIME = timedelta(days=30)
+
+
+# Logging
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "api_handler": {
+            "level": "INFO",
+            "class": "core.logging_handlers.ElasticsearchHandler",
+            "prefix": "api",
+        },
+    },
+    "loggers": {
+        "api_logger": {
+            "handlers": ["api_handler"],
+            "level": "INFO",
+        },
+    },
+}
