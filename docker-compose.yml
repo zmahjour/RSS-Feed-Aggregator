@@ -1,13 +1,13 @@
 services:
   rabbitmq:
     image: rabbitmq:3-management
+    container_name: rabbitmq
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
       - rabbitmq_log:/var/log/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
-    container_name: rabbitmq
     restart: always
     networks:
       - rss_network
@@ -17,31 +17,57 @@ services:
 
   db:
     image: postgres:14.9
+    container_name: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    container_name: postgres
     restart: always
     networks:
       - rss_network
     ports:
       - 5432:5432
 
+  elasticsearch:
+    image: elasticsearch:8.10.2
+    container_name: elasticsearch
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    restart: always
+    networks:
+      - rss_network
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: kibana:8.10.2
+    container_name: kibana
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+    depends_on:
+      - elasticsearch
+    restart: always
+    networks:
+      - rss_network
+    ports:
+      - 5601:5601
+
   redis:
     image: redis:7.2
+    container_name: redis
     volumes:
       - redis_data:/data
-    env_file:
-      - .env
     environment:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
-    container_name: redis
     networks:
       - rss_network
     ports:
@@ -49,11 +75,11 @@ services:
 
   app:
     build: .
+    container_name: rss_app
     volumes:
       - .:/app
     env_file:
       - .env
-    container_name: rss_app
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - rabbitmq
@@ -66,11 +92,11 @@ services:
 
   celery:
     build: .
+    container_name: celery
     volumes:
       - .:/app
     environment:
       - C_FORCE_ROOT="True"
-    container_name: celery
     command: "celery -A config worker -l INFO"
     depends_on:
       - db
@@ -82,9 +108,9 @@ services:
 
   celery_beat:
     build: .
+    container_name: celery_beat
     volumes:
       - .:/app
-    container_name: celery_beat
     command: "celery -A config beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     depends_on:
       - db
@@ -96,10 +122,10 @@ services:
 
   register_consumer:
     build: .
+    container_name: register_consumer
     env_file:
       - .env
-    container_name: register_consumer
-    command: "python manage.py runconsumer register"
+    command: sh -c "sleep 10 && python manage.py runconsumer register"
     depends_on:
       - rabbitmq
       - app
@@ -109,10 +135,10 @@ services:
 
   login_consumer:
     build: .
+    container_name: login_consumer
     env_file:
       - .env
-    container_name: login_consumer
-    command: "python manage.py runconsumer login"
+    command: sh -c "sleep 10 && python manage.py runconsumer login"
     depends_on:
       - rabbitmq
       - app
@@ -129,3 +155,5 @@ volumes:
   redis_data:
   rabbitmq_data:
   rabbitmq_log:
+  elasticsearch_data:
+  kibana_data:

@@ -63,6 +63,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "core.middlewares.LoggingMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -166,7 +167,7 @@ REST_FRAMEWORK = {
 }
 
 
-# Celery settings
+# Celery
 
 CELERY_BROKER_URL = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}"
 CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -180,7 +181,39 @@ CELERY_TASK_ACKS_LATE = True
 CELERY_TIMEZONE = "Asia/Tehran"
 
 
+# RabbitMQ
+
+RABBITMQ_HOST = env("RABBITMQ_HOST")
+
+
+# Elasticsearch
+
+ELASTICSEARCH_HOST = env("ELASTICSEARCH_HOST")
+ELASTICSEARCH_PORT = env("ELASTICSEARCH_PORT")
+
+
 # Custom JWT
 
 ACCESS_EXPIRE_TIME = timedelta(days=1)
 REFRESH_EXPIRE_TIME = timedelta(days=30)
+
+
+# Logging
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "api_handler": {
+            "level": "INFO",
+            "class": "core.logging_handlers.ElasticsearchHandler",
+            "prefix": "api",
+        },
+    },
+    "loggers": {
+        "api_logger": {
+            "handlers": ["api_handler"],
+            "level": "INFO",
+        },
+    },
+}
