@@ -18,3 +18,15 @@ class LoggingMiddleware:
 
         return response
 
+    def get_request_data(self, request):
+        request_data = {
+            "request_time": str(datetime.now(tz=pytz.timezone("Asia/Tehran"))),
+            "ip_address": request.META.get("REMOTE_ADDR"),
+            "user_agent": request.META.get("HTTP_USER_AGENT"),
+            "method": request.method,
+            "path": request.path,
+            "user": request.user.username or None,
+        }
+
+        return request_data
+
