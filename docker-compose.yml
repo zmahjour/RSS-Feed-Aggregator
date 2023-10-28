@@ -157,3 +157,5 @@ volumes:
   redis_data:
   rabbitmq_data:
   rabbitmq_log:
+  elasticsearch_data:
+  kibana_data:
