@@ -167,7 +167,7 @@ REST_FRAMEWORK = {
 }
 
 
-# Celery settings
+# Celery
 
 CELERY_BROKER_URL = f"redis://{env('REDIS_HOST')}:{env('REDIS_PORT')}"
 CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -179,6 +179,13 @@ CELERY_WORKER_CONCURRENCY = 20
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_TASK_ACKS_LATE = True
 CELERY_TIMEZONE = "Asia/Tehran"
+
+
+# RabbitMQ
+
+RABBITMQ_HOST = env("RABBITMQ_HOST")
+
+
 
 
 # Custom JWT
