@@ -128,8 +128,7 @@ services:
     build: .
     env_file:
       - .env
-    container_name: register_consumer
-    command: "python manage.py runconsumer register"
+    command: sh -c "sleep 10 && python manage.py runconsumer register"
     depends_on:
       - rabbitmq
       - app
@@ -141,8 +140,7 @@ services:
     build: .
     env_file:
       - .env
-    container_name: login_consumer
-    command: "python manage.py runconsumer login"
+    command: sh -c "sleep 10 && python manage.py runconsumer login"
     depends_on:
       - rabbitmq
       - app
