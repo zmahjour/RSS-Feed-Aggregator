@@ -20,3 +20,7 @@ class ElasticsearchHandler(logging.Handler):
         date = datetime.now(tz=pytz.timezone("Asia/Tehran")).strftime("%Y-%m-%d")
         return f"{self.prefix}-{date}"
 
+    @property
+    def timestamp(self):
+        return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
