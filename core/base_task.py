@@ -3,6 +3,9 @@ import logging
 import json
 
 
+logger = logging.getLogger("celery_logger")
+
+
 class BaseTaskWithRetry(Task):
     autoretry_for = (Exception,)
     max_retries = 5
