@@ -7,18 +7,14 @@ from .parser import create_or_update
 from .models import Rss
 
 
-logger = get_task_logger(__name__)
+
+@shared_task(bind=True, base=BaseTaskWithRetry)
+def create_or_update_one_channel_task(self, rss_url):
+    with transaction.atomic():
+        create_or_update(rss_url=rss_url)
 
 
-class BaseTaskWithRetry(Task):
-    autoretry_for = (Exception,)
-    max_retries = 5
-    retry_backoff = 2
-    retry_jitter = False
-
-
-@shared_task(base=BaseTaskWithRetry)
-def create_or_update_task():
+@shared_task(bind=True, base=BaseTaskWithRetry)
     rss_urls = [rss.rss_url for rss in Rss.objects.all()]
 
     for rss_url in rss_urls:
