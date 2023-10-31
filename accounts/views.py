@@ -83,6 +83,8 @@ class UserLoginView(APIView):
 
 
 class UserLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         access_token = request.META.get("HTTP_AUTHORIZATION")
         payload = jwt.decode(access_token, settings.SECRET_KEY, algorithms=["HS256"])
@@ -96,6 +98,8 @@ class UserLogoutView(APIView):
 
 
 class ObtainAccessTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         refresh_token = request.data.get("refresh_token")
 
