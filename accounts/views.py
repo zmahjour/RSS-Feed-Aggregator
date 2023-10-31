@@ -78,7 +78,8 @@ class UserLoginView(APIView):
                 data={
                     "access_token": access_token,
                     "refresh_token": refresh_token,
-                }
+                },
+                status=status.HTTP_200_OK,
             )
 
 
@@ -148,5 +149,6 @@ class ObtainAccessTokenView(APIView):
             data={
                 "access_token": access_token,
                 "refresh_token": refresh_token,
-            }
+            },
+            status=status.HTTP_200_OK,
         )
