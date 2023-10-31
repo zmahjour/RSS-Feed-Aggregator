@@ -33,3 +33,11 @@ class BaseTaskWithRetry(Task):
         }
         logger.error(json.dumps(log_data))
 
+    def on_success(self, retval, task_id, args, kwargs):
+        log_data = {
+            "task": self.name,
+            "task_id": task_id,
+            "state": states.SUCCESS,
+            "result": retval,
+        }
+        logger.info(json.dumps(log_data))
