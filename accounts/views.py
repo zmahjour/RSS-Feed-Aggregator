@@ -13,9 +13,13 @@ from core.send import publisher
 
 
 class UserRegisterView(APIView):
-    authentication_classes = []
-
     def post(self, request):
+        if request.user.is_authenticated:
+            return Response(
+                data={"message": _("You have already registered.")},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serialized_data = UserRegisterSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
             serialized_data.save()
