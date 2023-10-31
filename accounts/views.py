@@ -1,10 +1,11 @@
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import authenticate
+from django.core.cache import cache
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from django.contrib.auth import authenticate
-from django.core.cache import cache
-from django.conf import settings
 import jwt
 from .serializers import UserRegisterSerializer, UserLoginSerializer
 from .utils import JWTToken
@@ -28,7 +29,7 @@ class UserRegisterView(APIView):
             pub_data = {
                 "username": username,
                 "action": "register",
-                "notification": f"{username} registerd.",
+                "notification": f"{username} has registered.",
             }
             publisher(body=pub_data)
 
@@ -52,7 +53,7 @@ class UserLoginView(APIView):
 
             if user is None:
                 return Response(
-                    {"message": "Username or password was wrong."},
+                    {"message": _("Username or password was wrong.")},
                     status=status.HTTP_404_NOT_FOUND,
                 )
 
@@ -70,7 +71,7 @@ class UserLoginView(APIView):
             pub_data = {
                 "username": user.username,
                 "action": "login",
-                "notification": f"{user.username} logged in.",
+                "notification": f"{user.username} has logged in.",
             }
             publisher(body=pub_data)
 
@@ -94,7 +95,8 @@ class UserLogoutView(APIView):
         cache.delete(jti)
 
         return Response(
-            {"message": "You logged out successfully."}, status=status.HTTP_200_OK
+            {"message": _("You have logged out successfully.")},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -106,7 +108,7 @@ class ObtainAccessTokenView(APIView):
 
         if not refresh_token:
             return Response(
-                {"error": "Refresh token is missing."},
+                {"message": _("Refresh token is missing.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -117,23 +119,25 @@ class ObtainAccessTokenView(APIView):
             jti = payload.get("jti")
         except:
             return Response(
-                {"error": "Invalid refresh token."}, status=status.HTTP_401_UNAUTHORIZED
+                {"message": _("Invalid refresh token.")},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         if not cache.get(jti):
             return Response(
-                {"error": "Refresh token not found."}, status=status.HTTP_404_NOT_FOUND
+                {"message": _("Refresh token not found.")},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         try:
             user = User.objects.filter(id=payload["user_id"]).first()
             if user is None:
                 return Response(
-                    {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+                    {"message": _("User not found.")}, status=status.HTTP_404_NOT_FOUND
                 )
         except:
             return Response(
-                {"message": "User id not found in JWT."},
+                {"message": _("User id not found in JWT.")},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
