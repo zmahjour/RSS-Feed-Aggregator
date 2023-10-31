@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import IntegrityError
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,7 +20,18 @@ class RssView(APIView):
             rss_url = serialized_data.validated_data["rss_url"]
 
             try:
+                Rss.objects.create(rss_url=rss_url)
+                return Response(
+                    data={"message": _("New Rss instance created.")},
+                    status=status.HTTP_201_CREATED,
+                )
             except IntegrityError:
+                return Response(
+                    data={"message": _("This rss url already exists.")},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
+
 class CreateOrUpdateOneChannelView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -43,6 +55,10 @@ class CreateOrUpdateAllChannelsView(APIView):
         create_or_update_all_channels_task.delay()
 
         return Response(
+            data={"message": _("All channels are going to be updated.")},
+            status=status.HTTP_202_ACCEPTED,
+        )
+
 
 class ListOfChannelsView(generics.ListAPIView):
     authentication_classes = []
