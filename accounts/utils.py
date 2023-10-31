@@ -37,3 +37,9 @@ class JWTToken:
             refresh_token_payload, settings.SECRET_KEY, algorithm="HS256"
         )
         return refresh_token
+
+    def generate_access_and_refresh_token(self, user):
+        jti = self.jti
+        access_token = self.generate_access_token(jti=jti, user=user)
+        refresh_token = self.generate_refresh_token(jti=jti, user=user)
+        return jti, access_token, refresh_token
