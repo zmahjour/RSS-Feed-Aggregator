@@ -32,11 +32,12 @@ class CreateOrUpdateOneChannelView(APIView):
             )
 
 
-class CreateOrUpdateView(APIView):
+class CreateOrUpdateAllChannelsView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        create_or_update_task.delay()
+        create_or_update_all_channels_task.delay()
+
         return Response(
             data={"message": "All podcasts have been updated."},
             status=status.HTTP_200_OK,
