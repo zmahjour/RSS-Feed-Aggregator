@@ -1,11 +1,9 @@
+from django.db import IntegrityError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
-from django.db import transaction
-from .serializers import RssSerializer
-from .models import Rss
-from .tasks import create_or_update_task
+from .tasks import create_or_update_one_channel_task, create_or_update_all_channels_task
 
 
 class RssView(APIView):
