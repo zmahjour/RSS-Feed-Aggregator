@@ -39,6 +39,8 @@ class CreateOrUpdateAllChannelsView(APIView):
         create_or_update_all_channels_task.delay()
 
         return Response(
-            data={"message": "All podcasts have been updated."},
-            status=status.HTTP_200_OK,
-        )
+
+class ListOfChannelsView(generics.ListAPIView):
+    authentication_classes = []
+    queryset = Channel.objects.all()
+    serializer_class = ChannelSerializer
