@@ -1,11 +1,8 @@
-from celery import shared_task, Task
-from celery.utils.log import get_task_logger
 from django.db import transaction
 from celery import shared_task
 from core.base_task import BaseTaskWithRetry
 from .parser import create_or_update
 from .models import Rss
-
 
 
 @shared_task(bind=True, base=BaseTaskWithRetry)
