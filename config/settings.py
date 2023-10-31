@@ -210,11 +210,10 @@ LOGGING = {
             "class": "core.logging_handlers.ElasticsearchHandler",
             "prefix": "api",
         },
-    },
-    "loggers": {
-        "api_logger": {
-            "handlers": ["api_handler"],
+        "celery_handler": {
             "level": "INFO",
+            "class": "core.logging_handlers.ElasticsearchHandler",
+            "prefix": "celery",
         },
     },
 }
