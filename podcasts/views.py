@@ -13,7 +13,9 @@ class RssView(APIView):
         serialized_data = RssSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
             rss_url = serialized_data.validated_data["rss_url"]
-            Rss.objects.create(rss_url=rss_url)
+
+            try:
+            except IntegrityError:
             return Response(
                 data={"message": "New Rss instance created."},
                 status=status.HTTP_201_CREATED,
