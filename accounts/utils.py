@@ -6,7 +6,9 @@ import pytz
 
 
 class JWTToken:
-    jti = str(uuid.uuid4())
+    @property
+    def jti(self):
+        return str(uuid.uuid4())
 
     def generate_access_token(self, user):
         access_token_payload = {
