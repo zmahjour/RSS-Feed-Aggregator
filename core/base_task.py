@@ -23,3 +23,13 @@ class BaseTaskWithRetry(Task):
         }
         logger.warning(json.dumps(log_data))
 
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        log_data = {
+            "task": self.name,
+            "task_id": task_id,
+            "state": states.FAILURE,
+            "error": str(exc),
+            "traceback": einfo.traceback,
+        }
+        logger.error(json.dumps(log_data))
+
