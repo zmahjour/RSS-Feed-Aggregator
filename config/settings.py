@@ -216,4 +216,8 @@ LOGGING = {
             "prefix": "celery",
         },
     },
+    "loggers": {
+        "api_logger": {"handlers": ["api_handler"], "level": "INFO"},
+        "celery_logger": {"handlers": ["celery_handler"], "level": "INFO"},
+    },
 }
