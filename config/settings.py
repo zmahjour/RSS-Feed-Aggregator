@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from django.utils.translation import gettext_lazy as _
 from pathlib import Path
 from datetime import timedelta
 import environ
@@ -53,16 +54,19 @@ INSTALLED_APPS = [
     # 3rd party apps
     "rest_framework",
     "django_celery_beat",
+    "rosetta",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Custom middlewares
     "core.middlewares.LoggingMiddleware",
 ]
 
@@ -137,8 +141,20 @@ TIME_ZONE = "Asia/Tehran"
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
 
+# Language
+
+LANGUAGES = (
+    ("en", _("English")),
+    ("fa", _("Persian")),
+)
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale/",
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -209,11 +225,14 @@ LOGGING = {
             "class": "core.logging_handlers.ElasticsearchHandler",
             "prefix": "api",
         },
+        "celery_handler": {
+            "level": "INFO",
+            "class": "core.logging_handlers.ElasticsearchHandler",
+            "prefix": "celery",
+        },
     },
     "loggers": {
-        "api_logger": {
-            "handlers": ["api_handler"],
-            "level": "INFO",
-        },
+        "api_logger": {"handlers": ["api_handler"], "level": "INFO"},
+        "celery_logger": {"handlers": ["celery_handler"], "level": "INFO"},
     },
 }

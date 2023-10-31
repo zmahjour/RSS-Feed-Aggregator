@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from .models import User
 
@@ -16,7 +17,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data.get("password") != data.get("confirm_password"):
-            raise serializers.ValidationError("Passwords must be match.")
+            raise serializers.ValidationError(_("Passwords must be match."))
         return data
 
 

@@ -1,8 +1,9 @@
-from rest_framework.authentication import BaseAuthentication
-from rest_framework import exceptions
 from django.conf import settings
 from django.contrib.auth.backends import BaseBackend
 from django.core.cache import cache
+from django.utils.translation import gettext_lazy as _
+from rest_framework.authentication import BaseAuthentication
+from rest_framework import exceptions
 import jwt
 from .models import User
 
@@ -38,25 +39,24 @@ class JWTAuthentication(BaseAuthentication):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         except jwt.exceptions.InvalidSignatureError:
-            raise exceptions.AuthenticationFailed("Invalid signature.")
+            raise exceptions.AuthenticationFailed(_("Invalid signature."))
         except jwt.exceptions.ExpiredSignatureError:
-            raise exceptions.AuthenticationFailed("Access token expired.")
+            raise exceptions.AuthenticationFailed(_("Access token expired."))
         except Exception as e:
-            print(e)
-            raise exceptions.AuthenticationFailed("Invalid token.")
+            raise exceptions.AuthenticationFailed(str(e))
 
         jti = payload.get("jti")
 
         if not cache.get(jti):
-            raise exceptions.AuthenticationFailed("Invalid token.")
+            raise exceptions.AuthenticationFailed(_("Invalid token."))
 
         try:
             user = User.objects.filter(id=payload["user_id"]).first()
             if user is None:
-                raise User.DoesNotExist("User not found.")
+                raise User.DoesNotExist(_("User not found."))
             return user, None
         except:
-            raise exceptions.AuthenticationFailed("User id not found in JWT.")
+            raise exceptions.AuthenticationFailed(_("User id not found in JWT."))
 
     @classmethod
     def get_token_from_header(cls, header):

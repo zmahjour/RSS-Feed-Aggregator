@@ -1,12 +1,13 @@
 from django.contrib.auth.models import BaseUserManager
+from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password, **other_fields):
         if not username:
-            raise ValueError("Users must have an username")
+            raise ValueError(_("Users must have an username."))
         if not email:
-            raise ValueError("Users must have an email address")
+            raise ValueError(_("Users must have an email address."))
 
         user = self.model(
             username=username, email=self.normalize_email(email), **other_fields
