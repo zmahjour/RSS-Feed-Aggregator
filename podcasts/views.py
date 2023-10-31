@@ -16,9 +16,19 @@ class RssView(APIView):
 
             try:
             except IntegrityError:
+class CreateOrUpdateOneChannelView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serialized_data = RssSerializer(data=request.data)
+        if serialized_data.is_valid(raise_exception=True):
+            rss_url = serialized_data.validated_data["rss_url"]
+
+            create_or_update_one_channel_task.delay(rss_url=rss_url)
+
             return Response(
-                data={"message": "New Rss instance created."},
-                status=status.HTTP_201_CREATED,
+                data={"message": _("The channel is going to be updated.")},
+                status=status.HTTP_202_ACCEPTED,
             )
 
 
