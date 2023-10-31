@@ -36,9 +36,13 @@ class UserRegisterView(APIView):
 
 
 class UserLoginView(APIView):
-    authentication_classes = []
-
     def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return Response(
+                data={"message": _("You have already logged in.")},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serialized_data = UserLoginSerializer(data=request.data)
         if serialized_data.is_valid(raise_exception=True):
             username = serialized_data.validated_data.get("username")
