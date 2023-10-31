@@ -10,13 +10,13 @@ class JWTToken:
     def jti(self):
         return str(uuid.uuid4())
 
-    def generate_access_token(self, user):
+    def generate_access_token(self, jti, user):
         access_token_payload = {
             "user_id": user.id,
             "exp": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran"))
             + settings.ACCESS_EXPIRE_TIME,
             "iat": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran")),
-            "jti": self.jti,
+            "jti": jti,
         }
 
         access_token = jwt.encode(
@@ -24,13 +24,13 @@ class JWTToken:
         )
         return access_token
 
-    def generate_refresh_token(self, user):
+    def generate_refresh_token(self, jti, user):
         refresh_token_payload = {
             "user_id": user.id,
             "exp": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran"))
             + settings.REFRESH_EXPIRE_TIME,
             "iat": datetime.datetime.now(tz=pytz.timezone("Asia/Tehran")),
-            "jti": self.jti,
+            "jti": jti,
         }
 
         refresh_token = jwt.encode(
