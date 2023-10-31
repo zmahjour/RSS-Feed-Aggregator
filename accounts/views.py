@@ -49,10 +49,13 @@ class UserLoginView(APIView):
                 )
 
             jwt_token = JWTToken()
-            jti = jwt_token.jti
-            access_token = jwt_token.generate_access_token(user=user)
+            (
+                jti,
+                access_token,
+                refresh_token,
+            ) = jwt_token.generate_access_and_refresh_token(user=user)
+
             refresh_exp_seconds = settings.REFRESH_EXPIRE_TIME.total_seconds()
-            refresh_token = jwt_token.generate_refresh_token(user=user)
 
             cache.set(key=jti, value="whitelist", timeout=refresh_exp_seconds)
 
@@ -123,9 +126,9 @@ class ObtainAccessTokenView(APIView):
 
         cache.delete(jti)
         jwt_token = JWTToken()
-        jti = jwt_token.jti
-        access_token = jwt_token.generate_access_token(user=user)
-        refresh_token = jwt_token.generate_refresh_token(user=user)
+        jti, access_token, refresh_token = jwt_token.generate_access_and_refresh_token(
+            user=user
+        )
         refresh_exp_seconds = settings.REFRESH_EXPIRE_TIME.total_seconds()
         cache.set(key=jti, value="whitelist", timeout=refresh_exp_seconds)
 
