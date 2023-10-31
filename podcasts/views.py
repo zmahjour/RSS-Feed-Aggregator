@@ -50,3 +50,21 @@ class ListOfChannelsView(generics.ListAPIView):
     serializer_class = ChannelSerializer
     pagination_class = CustomPagination
 
+
+class ListOfEpisodesView(APIView):
+    authentication_classes = []
+
+    def get(self, request, channel_id):
+        try:
+            channel = Channel.objects.get(pk=channel_id)
+        except Channel.DoesNotExist:
+            return Response(
+                data={"message": _(f"Channel with id {channel_id} does not exist.")}
+            )
+
+        episodes = Episode.objects.filter(channel=channel)
+        paginator = CustomPagination()
+        paginated_data = paginator.paginate_queryset(episodes, request)
+        serialized_data = EpisodeSerializer(instance=paginated_data, many=True)
+
+        return paginator.get_paginated_response(serialized_data.data)
