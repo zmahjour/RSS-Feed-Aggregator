@@ -45,3 +45,5 @@ class ListOfChannelsView(generics.ListAPIView):
     authentication_classes = []
     queryset = Channel.objects.all()
     serializer_class = ChannelSerializer
+    pagination_class = CustomPagination
+
