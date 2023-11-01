@@ -14,7 +14,7 @@ class Subscription(models.Model):
         return f"{self.user} subscribed {self.channel}"
 
 
-class Favorite(models.Model):
+class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
