@@ -22,4 +22,5 @@ urlpatterns = [
     path("rosetta/", include("rosetta.urls")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("podcasts/", include("podcasts.urls", namespace="podcasts")),
+    path("interactions/", include("interactions.urls", namespace="interactions")),
 ]
