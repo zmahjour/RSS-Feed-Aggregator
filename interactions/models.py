@@ -14,7 +14,7 @@ class Subscription(models.Model):
         return f"{self.user} subscribed {self.channel}"
 
 
-class Favorite(models.Model):
+class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -28,6 +28,12 @@ class Favorite(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    @classmethod
+    def is_liked(cls, user, content_type, object_id):
+        return cls.objects.filter(
+            user=user, content_type=content_type, object_id=object_id
+        ).exists()
 
 
 class Comment(models.Model):
