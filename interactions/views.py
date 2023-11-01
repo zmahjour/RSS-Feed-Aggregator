@@ -9,3 +9,25 @@ from podcasts.models import Episode
 from .models import Like
 
 
+class LikeEpisodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, episode_id):
+        content_type = get_object_or_404(ContentType, model="episode")
+        episode = get_object_or_404(Episode, pk=episode_id)
+        user = request.user
+
+        if Like.is_liked(user=user, content_type=content_type, object_id=episode_id):
+            return Response(
+                data={"message": _("You have liked this episode before.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        Like.objects.create(user=user, content_object=episode)
+
+        return Response(
+            data={"message": _("You have liked this episode.")},
+            status=status.HTTP_201_CREATED,
+        )
+
+
