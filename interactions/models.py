@@ -77,6 +77,11 @@ class Comment(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @classmethod
+    def get_item_comments(cls, content_type, object_id):
+        commetns = cls.objects.filter(content_type=content_type, object_id=object_id)
+        return commetns
+
 
 class Playlist(models.Model):
     title = models.CharField(max_length=50)
