@@ -115,6 +115,16 @@ class Bookmark(models.Model):
             user=user, content_type=content_type, object_id=object_id
         ).exists()
 
+    @classmethod
+    def get_bookmarked_objects(cls, user, content_type):
+        model = content_type.model_class()
+        bookmarked_objects = model.objects.filter(
+            pk__in=cls.objects.filter(user=user, content_type=content_type).values_list(
+                "object_id", flat=True
+            )
+        )
+        return bookmarked_objects
+
 
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
