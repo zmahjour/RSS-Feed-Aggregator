@@ -221,6 +221,36 @@ class ListOfBookmarkedChannelsView(APIView):
 
         return Response(data=serialized_data.data, status=status.HTTP_200_OK)
 
+
+class ListOfAllBookmarkedItemsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        content_type = ContentType.objects.get_for_model(Channel)
+        bookmarked_channels = Bookmark.get_bookmarked_objects(
+            user=user, content_type=content_type
+        )
+        channels_serialized_data = ChannelSerializer(
+            instance=bookmarked_channels, many=True
+        )
+
+        content_type = ContentType.objects.get_for_model(Episode)
+        bookmarked_episodes = Bookmark.get_bookmarked_objects(
+            user=user, content_type=content_type
+        )
+        episodes_serialized_data = EpisodeSerializer(
+            instance=bookmarked_episodes, many=True
+        )
+
+        all_bookmarked_items = {
+            "channels": channels_serialized_data.data,
+            "episodes": episodes_serialized_data.data,
+        }
+
+        return Response(data=all_bookmarked_items, status=status.HTTP_200_OK)
+
+
             return Response(
                 data={"message": _("You have not liked this episode before.")},
                 status=status.HTTP_400_BAD_REQUEST,
