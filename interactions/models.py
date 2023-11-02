@@ -13,6 +13,10 @@ class Subscription(models.Model):
     def __str__(self):
         return f"{self.user} subscribed {self.channel}"
 
+    @classmethod
+    def is_subscribed(cls, user, channel):
+        return cls.objects.filter(user=user, channel=channel).exists()
+
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
