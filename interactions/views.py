@@ -57,6 +57,17 @@ class UnsubscribeChannelView(APIView):
         )
 
 
+class ListOfSubscribedChannelsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        subscribed_channels = Subscription.get_subscribed_channels(user=user)
+        serialized_data = ChannelSerializer(instance=subscribed_channels, many=True)
+
+        return Response(data=serialized_data.data, status=status.HTTP_200_OK)
+
+
 
 class UnlikeEpisodeView(APIView):
     permission_classes = [IsAuthenticated]
