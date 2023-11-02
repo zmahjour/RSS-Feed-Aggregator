@@ -27,3 +27,26 @@ def create_interaction_with_generic_relation(
     return Response(data={"message": success_message}, status=status.HTTP_201_CREATED)
 
 
+def delete_interaction_with_generic_relation(
+    user,
+    object_model,
+    object_id,
+    interaction_model,
+    failure_message,
+    success_message,
+    is_method=None,
+):
+    content_type = ContentType.objects.get_for_model(object_model)
+
+    if is_method and not is_method(
+        user=user, content_type=content_type, object_id=object_id
+    ):
+        return Response(
+            data={"message": failure_message}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    interaction_model.objects.get(
+        user=user, content_type=content_type, object_id=object_id
+    ).delete()
+
+    return Response(data={"message": success_message}, status=status.HTTP_200_OK)
