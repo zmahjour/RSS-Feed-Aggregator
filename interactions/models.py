@@ -109,6 +109,12 @@ class Bookmark(models.Model):
     def __str__(self):
         return str(self.id)
 
+    @classmethod
+    def is_bookmarked(cls, user, content_type, object_id):
+        return cls.objects.filter(
+            user=user, content_type=content_type, object_id=object_id
+        ).exists()
+
 
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
