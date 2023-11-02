@@ -101,6 +101,19 @@ class UnlikeEpisodeView(APIView):
             success_message=_("You have unliked this episode."),
         )
 
+
+class ListOfLikedEpisodesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        content_type = ContentType.objects.get_for_model(Episode)
+        liked_episodes = Like.get_liked_objects(user=user, content_type=content_type)
+        serialized_data = EpisodeSerializer(instance=liked_episodes, many=True)
+
+        return Response(data=serialized_data.data, status=status.HTTP_200_OK)
+
+
         user = request.user
 
         if not Like.is_liked(
