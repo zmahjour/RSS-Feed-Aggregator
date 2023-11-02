@@ -13,6 +13,17 @@ class Subscription(models.Model):
     def __str__(self):
         return f"{self.user} subscribed {self.channel}"
 
+    @classmethod
+    def is_subscribed(cls, user, channel):
+        return cls.objects.filter(user=user, channel=channel).exists()
+
+    @classmethod
+    def get_subscribed_channels(cls, user):
+        subscribed_channels = Channel.objects.filter(
+            pk__in=cls.objects.filter(user=user).values_list("channel", flat=True)
+        )
+        return subscribed_channels
+
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -35,6 +46,16 @@ class Like(models.Model):
             user=user, content_type=content_type, object_id=object_id
         ).exists()
 
+    @classmethod
+    def get_liked_objects(cls, user, content_type):
+        model = content_type.model_class()
+        liked_objects = model.objects.filter(
+            pk__in=cls.objects.filter(user=user, content_type=content_type).values_list(
+                "object_id", flat=True
+            )
+        )
+        return liked_objects
+
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -55,6 +76,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    @classmethod
+    def get_item_comments(cls, content_type, object_id):
+        commetns = cls.objects.filter(content_type=content_type, object_id=object_id)
+        return commetns
 
 
 class Playlist(models.Model):
@@ -82,6 +108,22 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    @classmethod
+    def is_bookmarked(cls, user, content_type, object_id):
+        return cls.objects.filter(
+            user=user, content_type=content_type, object_id=object_id
+        ).exists()
+
+    @classmethod
+    def get_bookmarked_objects(cls, user, content_type):
+        model = content_type.model_class()
+        bookmarked_objects = model.objects.filter(
+            pk__in=cls.objects.filter(user=user, content_type=content_type).values_list(
+                "object_id", flat=True
+            )
+        )
+        return bookmarked_objects
 
 
 class Notification(models.Model):
