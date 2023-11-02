@@ -46,6 +46,16 @@ class Like(models.Model):
             user=user, content_type=content_type, object_id=object_id
         ).exists()
 
+    @classmethod
+    def get_liked_objects(cls, user, content_type):
+        model = content_type.model_class()
+        liked_objects = model.objects.filter(
+            pk__in=cls.objects.filter(user=user, content_type=content_type).values_list(
+                "object_id", flat=True
+            )
+        )
+        return liked_objects
+
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
