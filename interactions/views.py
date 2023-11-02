@@ -114,6 +114,28 @@ class ListOfLikedEpisodesView(APIView):
         return Response(data=serialized_data.data, status=status.HTTP_200_OK)
 
 
+class BookmarkEpisodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, episode_id, playlist_name=None):
+        user = request.user
+
+        if playlist_name:
+            playlist, created = Playlist.objects.get_or_create(title=playlist_name)
+        else:
+            playlist = None
+
+        return create_interaction_with_generic_relation(
+            user=user,
+            object_model=Episode,
+            object_id=episode_id,
+            interaction_model=Bookmark,
+            is_method=Bookmark.is_bookmarked,
+            failure_message=_("You have bookmarked this episode before."),
+            success_message=_("You have bookmarked this episode."),
+            playlist=playlist,
+        )
+
         user = request.user
 
         if not Like.is_liked(
