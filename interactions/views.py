@@ -270,6 +270,19 @@ class CommentEpisodeView(APIView):
             content=content,
         )
 
+
+class GetEpisodeCommentsView(APIView):
+    authentication_classes = []
+
+    def get(self, request, episode_id):
+        content_type = ContentType.objects.get_for_model(Episode)
+        comments = Comment.get_item_comments(
+            content_type=content_type, object_id=episode_id
+        )
+        serialized_data = CommentSerializer(instance=comments, many=True)
+        return Response(data=serialized_data.data, status=status.HTTP_200_OK)
+
+
             return Response(
                 data={"message": _("You have not liked this episode before.")},
                 status=status.HTTP_400_BAD_REQUEST,
