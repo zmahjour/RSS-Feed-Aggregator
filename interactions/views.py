@@ -68,6 +68,22 @@ class ListOfSubscribedChannelsView(APIView):
         return Response(data=serialized_data.data, status=status.HTTP_200_OK)
 
 
+class LikeEpisodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, episode_id):
+        user = request.user
+
+        return create_interaction_with_generic_relation(
+            user=user,
+            object_model=Episode,
+            object_id=episode_id,
+            interaction_model=Like,
+            is_method=Like.is_liked,
+            failure_message=_("You have liked this episode before."),
+            success_message=_("You have liked this episode."),
+        )
+
 
 class UnlikeEpisodeView(APIView):
     permission_classes = [IsAuthenticated]
