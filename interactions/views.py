@@ -18,18 +18,17 @@ from .utils import (
 class SubscribeChannelView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, episode_id):
-        content_type = get_object_or_404(ContentType, model="episode")
-        episode = get_object_or_404(Episode, pk=episode_id)
+    def get(self, request, channel_id):
         user = request.user
+        channel = get_object_or_404(Channel, pk=channel_id)
 
-        if Like.is_liked(user=user, content_type=content_type, object_id=episode_id):
+        if Subscription.is_subscribed(user, channel):
             return Response(
-                data={"message": _("You have liked this episode before.")},
+                data={"message": _("You have subscribed this channel before.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        Like.objects.create(user=user, content_object=episode)
+        Subscription.objects.create(user=user, channel=channel)
 
         return Response(
             data={"message": _("You have liked this episode.")},
