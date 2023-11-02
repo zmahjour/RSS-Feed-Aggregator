@@ -193,6 +193,20 @@ class UnbookmarkChannelView(APIView):
             success_message=_("You have unbookmarked this channel."),
         )
 
+
+class ListOfBookmarkedEpisodesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        content_type = ContentType.objects.get_for_model(Episode)
+        bookmarked_episodes = Bookmark.get_bookmarked_objects(
+            user=user, content_type=content_type
+        )
+        serialized_data = EpisodeSerializer(instance=bookmarked_episodes, many=True)
+
+        return Response(data=serialized_data.data, status=status.HTTP_200_OK)
+
             return Response(
                 data={"message": _("You have not liked this episode before.")},
                 status=status.HTTP_400_BAD_REQUEST,
