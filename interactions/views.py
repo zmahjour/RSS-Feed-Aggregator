@@ -251,6 +251,25 @@ class ListOfAllBookmarkedItemsView(APIView):
         return Response(data=all_bookmarked_items, status=status.HTTP_200_OK)
 
 
+class CommentEpisodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, episode_id):
+        user = request.user
+        serialized_data = CommentSerializer(data=request.data)
+        if serialized_data.is_valid(raise_exception=True):
+            content = serialized_data.validated_data.get("content")
+
+        return create_interaction_with_generic_relation(
+            user=user,
+            object_model=Episode,
+            object_id=episode_id,
+            interaction_model=Comment,
+            failure_message="",
+            success_message=_("You have commented on this episode."),
+            content=content,
+        )
+
             return Response(
                 data={"message": _("You have not liked this episode before.")},
                 status=status.HTTP_400_BAD_REQUEST,
