@@ -177,11 +177,22 @@ class BookmarkChannelView(APIView):
         )
 
 
+class UnbookmarkChannelView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, channel_id):
         user = request.user
 
-        if not Like.is_liked(
-            user=user, content_type=content_type, object_id=episode_id
-        ):
+        return delete_interaction_with_generic_relation(
+            user=user,
+            object_model=Channel,
+            object_id=channel_id,
+            interaction_model=Bookmark,
+            is_method=Bookmark.is_bookmarked,
+            failure_message=_("You have not bookmarked this channel before."),
+            success_message=_("You have unbookmarked this channel."),
+        )
+
             return Response(
                 data={"message": _("You have not liked this episode before.")},
                 status=status.HTTP_400_BAD_REQUEST,
