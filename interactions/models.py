@@ -17,6 +17,13 @@ class Subscription(models.Model):
     def is_subscribed(cls, user, channel):
         return cls.objects.filter(user=user, channel=channel).exists()
 
+    @classmethod
+    def get_subscribed_channels(cls, user):
+        subscribed_channels = Channel.objects.filter(
+            pk__in=cls.objects.filter(user=user).values_list("channel", flat=True)
+        )
+        return subscribed_channels
+
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
