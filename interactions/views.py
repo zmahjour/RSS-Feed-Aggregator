@@ -283,16 +283,18 @@ class GetEpisodeCommentsView(APIView):
         return Response(data=serialized_data.data, status=status.HTTP_200_OK)
 
 
+class UncommentEpisodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, comment_id):
+        try:
+            Comment.objects.get(pk=comment_id).delete()
+        except Comment.DoesNotExist:
             return Response(
-                data={"message": _("You have not liked this episode before.")},
-                status=status.HTTP_400_BAD_REQUEST,
+                data={"message": _(f"Comment with id {comment_id} does not exist.")}
             )
 
-        Like.objects.get(
-            user=user, content_type=content_type, object_id=episode_id
-        ).delete()
-
         return Response(
-            data={"message": _("You have unliked this episode.")},
+            {"message": _("You have deleted the comment successfully.")},
             status=status.HTTP_200_OK,
         )
