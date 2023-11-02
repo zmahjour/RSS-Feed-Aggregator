@@ -136,6 +136,24 @@ class BookmarkEpisodeView(APIView):
             playlist=playlist,
         )
 
+
+class UnbookmarkEpisodeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, episode_id):
+        user = request.user
+
+        return delete_interaction_with_generic_relation(
+            user=user,
+            object_model=Episode,
+            object_id=episode_id,
+            interaction_model=Bookmark,
+            is_method=Bookmark.is_bookmarked,
+            failure_message=_("You have not bookmarked this episode before."),
+            success_message=_("You have unbookmarked this episode."),
+        )
+
+
         user = request.user
 
         if not Like.is_liked(
