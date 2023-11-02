@@ -89,7 +89,18 @@ class UnlikeEpisodeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, episode_id):
-        content_type = get_object_or_404(ContentType, model="episode")
+        user = request.user
+
+        return delete_interaction_with_generic_relation(
+            user=user,
+            object_model=Episode,
+            object_id=episode_id,
+            interaction_model=Like,
+            is_method=Like.is_liked,
+            failure_message=_("You have not liked this episode before."),
+            success_message=_("You have unliked this episode."),
+        )
+
         user = request.user
 
         if not Like.is_liked(
