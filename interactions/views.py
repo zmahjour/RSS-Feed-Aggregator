@@ -5,11 +5,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from podcasts.models import Episode
-from .models import Like
+from podcasts.models import Episode, Channel
+from podcasts.serializers import ChannelSerializer, EpisodeSerializer
+from .serializers import CommentSerializer
+from .models import Subscription, Like, Bookmark, Playlist, Comment
+from .utils import (
+    create_interaction_with_generic_relation,
+    delete_interaction_with_generic_relation,
+)
 
 
-class LikeEpisodeView(APIView):
+class SubscribeChannelView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, episode_id):
