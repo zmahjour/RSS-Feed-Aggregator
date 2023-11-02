@@ -31,9 +31,31 @@ class SubscribeChannelView(APIView):
         Subscription.objects.create(user=user, channel=channel)
 
         return Response(
-            data={"message": _("You have liked this episode.")},
+            data={"message": _("You have subscribed this channel.")},
             status=status.HTTP_201_CREATED,
         )
+
+
+class UnsubscribeChannelView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, channel_id):
+        user = request.user
+        channel = get_object_or_404(Channel, pk=channel_id)
+
+        if not Subscription.is_subscribed(user=user, channel=channel):
+            return Response(
+                data={"message": _("You have not subscribed this channel before.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        Subscription.objects.get(user=user, channel=channel).delete()
+
+        return Response(
+            data={"message": _("You have unsubscribed this channel.")},
+            status=status.HTTP_200_OK,
+        )
+
 
 
 class UnlikeEpisodeView(APIView):
